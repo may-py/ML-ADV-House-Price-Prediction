@@ -131,6 +131,7 @@ venv.bak/
 artifacts/
 .source
 source/
+source.zip
 
 # Spyder project settings
 .spyderproject
