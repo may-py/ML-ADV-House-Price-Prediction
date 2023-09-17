@@ -4,10 +4,11 @@ from src.logger import logging
 import pandas as pd
 import numpy as np
 from dataclasses import dataclass
+from scipy import sparse
 
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
 from sklearn.impute import SimpleImputer
 
 from src.utils import save_object
@@ -51,7 +52,7 @@ class DataTransformation:
             cat_pipeline = Pipeline(
                 steps=[
                     ("imputer", SimpleImputer(strategy="most_frequent")),
-                    ("onehot", OneHotEncoder(handle_unknown="ignore")),
+                    ("onehot", OneHotEncoder(handle_unknown='infrequent_if_exist')),
                     ('scaler', StandardScaler(with_mean=False)),
                 ]
             )
@@ -89,11 +90,11 @@ class DataTransformation:
             input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
             input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
 
-            print("Shape",input_feature_train_arr.shape, np.array(target_feature_train_df).shape)
+            print("Shape",input_feature_train_arr.shape, target_feature_train_df.shape)
 
-            train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]
+            train_arr = np.c_[input_feature_train_arr.toarray(),np.array(target_feature_train_df)]
 
-            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
+            test_arr = np.c_[input_feature_test_arr.toarray(), np.array(target_feature_test_df)]
 
             logging.info(f"Saved preprocessing object.")
 
